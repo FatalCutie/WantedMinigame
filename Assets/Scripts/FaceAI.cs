@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro.Examples;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class FaceAI : MonoBehaviour
 {
+    #region Variables
     private GameManager gm;
     public GameObject emptyFacePrefab;
     public GameObject facesContainer;
@@ -13,8 +11,13 @@ public class FaceAI : MonoBehaviour
     [SerializeField] private GameObject screenBorderHolder;
     private bool firstRun = true;
     public int roundsWon;
-    public enum Modifier { NONE, SQUARE, MOVING }
+    public enum Modifier { NONE, HELIX, RANDOM }
     public Modifier roundModifier = Modifier.NONE;
+
+    [Header("Play Area Bounds")]
+    public float halfWidth = 9.8f;
+    public float halfHeight = 5.5f;
+    #endregion
 
     void Awake()
     {
@@ -59,14 +62,19 @@ public class FaceAI : MonoBehaviour
         }
     }
 
+    private void DecideDifficultyModifier()
+    {
+        int points = roundsWon * 10;
+    }
+
     Modifier RollRoundModifier()
     {
-        return Modifier.MOVING;
+        return Modifier.HELIX;
     }
     //Temp
     int DecideNumberOfFaces(int points)
     {
-        if (points > 350) points = 350;
+        if (points > 350) points = 250;
         return points / 2;
     }
 
@@ -78,7 +86,7 @@ public class FaceAI : MonoBehaviour
         for (int i = 0; i < facesToGenerate; i++)
         {
             Vector2 spawnPos = FindValidSpawnPosition(usedPositions);
-            if (spawnPos != new Vector2(0, 0)) //only spawn if a safe spot was found
+            if (spawnPos != new Vector2(0, 0)) //only spawn if a visible spot was found
             {
                 GameObject go = Instantiate(emptyFacePrefab, new Vector3(spawnPos.x, spawnPos.y, 0f), Quaternion.identity, facesContainer.transform);
                 Face goFace = go.GetComponent<Face>();
@@ -95,19 +103,28 @@ public class FaceAI : MonoBehaviour
     //Make sure faces don't spawn over eachother
     Vector2 FindValidSpawnPosition(List<Vector2> usedPositions)
     {
-        float minDistance = 0.5f;
+        float minDistance = .85f;
         int maxAttempts = 30;
         Vector2 spawnPos = Vector2.zero;
         bool valid = false;
         int attempts = 0;
 
+        float halfSizeX = emptyFacePrefab.transform.localScale.x / 2f;
+        float halfSizeY = emptyFacePrefab.transform.localScale.y / 2f;
+
         while (!valid && attempts < maxAttempts)
         {
             attempts++;
-            float x = UnityEngine.Random.Range(-8.8f, 8.8f);
-            float y = UnityEngine.Random.Range(-4.5f, 4.5f);
+
+            //X always fully inside horizontal bounds
+            float x = UnityEngine.Random.Range(-halfWidth + halfSizeX, halfWidth - halfSizeX);
+
+            //Y can spawn within vertical bounds including the offscreen margins
+            float y = UnityEngine.Random.Range(-halfHeight - halfSizeY, halfHeight + halfSizeY);
+
             spawnPos = new Vector2(x, y);
 
+            //check overlap with existing faces
             valid = true;
             foreach (Vector2 existing in usedPositions)
             {
@@ -118,8 +135,8 @@ public class FaceAI : MonoBehaviour
                 }
             }
         }
-        if (valid) return spawnPos;
-        else return new Vector2(0, 0);
+
+        return valid ? spawnPos : Vector2.zero;
     }
 
     //Generates faces in a square for first few rounds
@@ -131,7 +148,7 @@ public class FaceAI : MonoBehaviour
                 //Generate 2x2 square
                 for (int i = 0; i < 2; i++)
                 {
-                    float startingY = -0.5f + 1 * i;
+                    float startingY = -0.5f + 1 * i; //.5 is hard coded. adjust if bigger faces are used
                     for (int j = 0; j < 2; j++)
                     {
                         float startingX = -0.5f + 1 * j;

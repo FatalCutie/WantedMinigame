@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 4287095122973457519}
   - component: {fileID: 4643829361210305539}
   - component: {fileID: 9068407910603601954}
-  - component: {fileID: 2173081621583722953}
+  - component: {fileID: -2376188038277670158}
   - component: {fileID: 7848901140908722090}
   m_Layer: 0
-  m_Name: Face
+  m_Name: Bigger Face
   m_TagString: Face
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.17, y: 1.38, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -103,7 +103,7 @@ MonoBehaviour:
   sr: {fileID: 4643829361210305539}
   movementLocked: 1
   faceID: 0
---- !u!114 &2173081621583722953
+--- !u!114 &-2376188038277670158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,11 +116,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modifier: 0
+  forwardDirection: {x: 0, y: 1}
   speed: 2
   frequency: 2
   amplitude: 1
   x: 5
   y: 5
+  movementLocked: 0
 --- !u!58 &7848901140908722090
 CircleCollider2D:
   m_ObjectHideFlags: 0

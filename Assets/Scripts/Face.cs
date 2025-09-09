@@ -12,37 +12,17 @@ public class Face : MonoBehaviour
     public enum FaceID { FACE1, FACE2, FACE3, FACE4 };
     public bool movementLocked = true;
     public FaceID faceID;
-    public float x, y = 1;
+
     #endregion
-
-    void FixedUpdate()
-    {
-        //Movement unlocked and initilized by FaceAI
-        if (!movementLocked)
-        {
-            transform.position += new Vector3(x, y, 0);
-
-            //Out of bounds checks
-            if (transform.position.x > 9.8) transform.position = new Vector3(-9.8f, transform.position.y, 0);
-            else if (transform.position.x < -9.8) transform.position = new Vector3(9.8f, transform.position.y, 0); //this might not work
-            if (transform.position.y >= 5.5) transform.position -= new Vector3(0, 11f, 0);
-            else if (transform.position.y <= -5.5) transform.position += new Vector3(0, 11f, 0); //this might not work
-        }
-
-        //Magic numbers are already adjusted
-        //Magic number: y: -5.5, 5.5
-        //X: -11, 7.5 
-    }
 
     //Initilizes FaceID as well as sprite
     //This needs to take into account there can only be 1 wanted
     public void Initilize(FaceAI.Modifier modifier)
     {
         gm = FindObjectOfType<GameManager>();
+        GetComponent<FaceMovement>().modifier = modifier;
         FaceID wantedID = gm.wanted;
         faceID = (FaceID)Random.Range(0, 4);
-
-        if (modifier == FaceAI.Modifier.MOVING) ConfigFaceMovement(-5, -5);
 
         //If wanted is generated mark it as so, if duplicate wanted is generated then reroll
         if (faceID == wantedID && !gm.wantedGenerated) gm.wantedGenerated = true;
@@ -102,10 +82,15 @@ public class Face : MonoBehaviour
         }
     }
 
-    public void ConfigFaceMovement(float xx, float yy)
+    //Small face out of bounds check
+    public void OutOfBoundsCheck()
     {
-        this.x = xx * 0.01f;
-        this.y = yy * 0.01f;
-        movementLocked = false;
+        if (transform.position.x > 9.8) transform.position = new Vector3(-9.8f, transform.position.y, 0);
+        else if (transform.position.x < -9.8) transform.position = new Vector3(9.8f, transform.position.y, 0);
+        if (transform.position.y >= 5.5) transform.position -= new Vector3(0, 11f, 0);
+        else if (transform.position.y <= -5.5) transform.position += new Vector3(0, 11f, 0);
     }
+    //Magic numbers are already adjusted
+    //Magic number: y: -5.5, 5.5
+    //X: -11, 7.5 
 }

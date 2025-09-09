@@ -53,9 +53,9 @@ public class GameManager : MonoBehaviour
         {
             timer -= Time.deltaTime;
             timerText.text = $"{(int)Math.Ceiling(timer)}";
-            if (timer > 99)
+            if (timer > 50)
             { //clamp timer value
-                timer = 99f;
+                timer = 50f;
             }
         }
         else if (timer < 0)
@@ -155,9 +155,9 @@ public class GameManager : MonoBehaviour
         paused = true;
         foreach (Face f in faces)
         {
-            f.movementLocked = true;
+            f.GetComponent<FaceMovement>().movementLocked = true;
             if (f.faceID != wanted) f.gameObject.SetActive(false); //hide incorrect faces
-            if (f.faceID == wanted) f.movementLocked = true;
+            if (f.faceID == wanted) f.GetComponent<FaceMovement>().movementLocked = true;
         }
         yield return new WaitForSeconds(2);
         //Transition to next round
@@ -190,7 +190,7 @@ public class GameManager : MonoBehaviour
             foreach (Face f in faces)
             {
                 if (f.faceID != wanted) Destroy(f.gameObject); //destroy incorrect faces
-                if (f.faceID == wanted) f.movementLocked = true;
+                if (f.faceID == wanted) f.GetComponent<FaceMovement>().movementLocked = true;
             }
         }
         catch (MissingReferenceException) { }
